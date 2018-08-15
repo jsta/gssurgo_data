@@ -1,10 +1,12 @@
-# gSSURGO
+# gssurgo_data
 
 [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 
-`gSSURGO` contains multiple text format datasets referenced to a single raster grid. The raster grids are contained within file geodatabase archives and  can only be extracted using ArcGIS (using the fileGDB driver).
+The `gSSURGO` data product contains multiple text format datasets referenced to a single raster grid. The raster grids are contained within file geodatabase archives and  can only be extracted using ArcGIS (using the fileGDB driver).
 
-This repo enables subsequent open source workflows by extracting the grid and aggregating it along with the remaining data into a geopackage.
+This repo enables subsequent open source workflows to extract `gSSURGO` grids and aggregate the remaining data into a geopackage.
+
+Much of the operation of this repo is facilitated by the `gssurgo` python package.
 
 ## Prereqs
 
@@ -27,7 +29,7 @@ source activate gSSURGO
 
 `make all`
 
-### 2. Pull specific variable and merge with corresponding tif
+### 2. Pull a specific variable and merge with corresponding tif
 
 Compose an SQL query that give a two column result of `mukey` and `some_variable`. For example, `'SELECT mukey, nonirryield_r FROM mucropyld WHERE (cropname = "Corn")'`. Pass this query to `query_gpkg.py` along with a bounding box given by `xmax`, `xmin`, `ymin`, `ymax`. For example, the following call produces a tif or non irrigated corn yields clipped to the defined bounding box:
 
