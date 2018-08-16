@@ -22,7 +22,7 @@ tbl(con, "dt") %>%
   show_query()
 
 # ---- example_kwfact ----
-gpkg <- "gSSURGO_MI.gpkg"
+gpkg <- "/home/jose/Dropbox/Data/gSSURGO/gpkgs/gSSURGO_MI.gpkg"
 con  <- src_sqlite(gpkg)
 # src_tbls(con)
 
@@ -33,4 +33,14 @@ tbl(con, "component") %>%
   filter(hzname == "A", majcompflag == "Yes") %>%
   group_by(mukey) %>%
   summarize(kwfact = mean(kwfact, na.rm = TRUE)) %>%
-  show_query()
+  dbplyr::sql_render() %>%
+  stringr::str_replace_all(c("`" = "", "\n" = " ")) %>%
+  cat()
+
+# ---- example_pwsl1pomu ----
+
+tbl(con, "Valu1") %>%
+  select(mukey, pwsl1pomu) %>%
+  dbplyr::sql_render() %>%
+  stringr::str_replace_all(c("`" = "", "\n" = " ")) %>%
+  cat()
