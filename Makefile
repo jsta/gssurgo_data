@@ -1,11 +1,11 @@
-zips = $(wildcard *.zip)
-gdbs = $(patsubst %.zip, %, $(zips))
-tifs = $(patsubst %.gdb, tifs/%.tif, $(gdbs))
-gpkgs = $(patsubst %.gdb, %.gpkg, $(gdbs))
+zips = $(wildcard zips/*.zip)
+gdbs = $(patsubst zips/%.zip, gdbs/%, $(zips))
+tifs = $(patsubst gdbs/%.gdb, tifs/%.tif, $(gdbs))
+gpkgs = $(patsubst gdbs/%.gdb, gpkgs/%.gpkg, $(gdbs))
 
 # ME, CT, IL, IN, IA, MN, MO, NH, VT, MA, MI, NJ, NY, OH, PA, RI, WI}
 
-.PHONY: all test tifs clean example
+.PHONY: all test tifs clean example reset
 
 test: test_makefile test_query test_gssurgo
 
@@ -18,10 +18,10 @@ all: $(gdbs) $(tifs) $(gpkgs)
 
 gdbs: $(gdbs)
 
-%.gdb: %.gdb.zip
-	-unzip -u $<
+gdbs/%.gdb: zips/%.gdb.zip
+	-unzip -u $< -d gdbs
 
-tifs/%.tif: %.gdb pull_ssurgo_tif.py
+tifs/%.tif: gdbs/%.gdb pull_ssurgo_tif.py
 	echo $@
 	echo $</MapunitRaster_10m
 	-C:/Python27/ArcGIS10.3/python.exe pull_ssurgo_tif.py $</MapunitRaster_10m $@
@@ -29,15 +29,18 @@ tifs/%.tif: %.gdb pull_ssurgo_tif.py
 	-mv temp.tif $@
 	-rm temp.tif
 
-%.gpkg: %.gdb
+gpkgs/%.gpkg: gdbs/%.gdb
 	-ogr2ogr -progress -f GPKG $@ $<
 	-ogr2ogr -update -f GPKG $@ $<
 
-clean:
+clean:	
+	-rm -rf $(gdbs)	
+
+reset: 
 	-rm $(tifs)
 	-rm -rf $(gdbs)
 	-rm -rf $(gpkgs)
-	-rm tifs/*.tfw tifs/*.ovr tifs/*.xml tifs/*.cpg tifs/*.dbf	
+	-rm tifs/*.tfw tifs/*.ovr tifs/*.xml tifs/*.cpg tifs/*.dbf
 
 test_query:
 	Rscript tests/make_gpkg.R
