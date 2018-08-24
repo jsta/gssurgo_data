@@ -17,12 +17,6 @@ conda env create -n gssurgo -f environment.yml
 source activate gssurgo
 ```
 
-# development install 
-pip install git+git://github.com/jsta/gssurgo.git
-
-# development upgrade
-# pip install --upgrade git+git://github.com/jsta/gssurgo.git
-
 ## Usage
 
 ### 1. Extract tifs and build gpkgs
