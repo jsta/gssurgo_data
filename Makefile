@@ -21,13 +21,8 @@ gdbs: $(gdbs)
 gdbs/%.gdb: zips/%.gdb.zip
 	-unzip -u $< -d gdbs
 
-tifs/%.tif: gdbs/%.gdb pull_ssurgo_tif.py
-	echo $@
-	echo $</MapunitRaster_10m
-	-C:/Python27/ArcGIS10.3/python.exe pull_ssurgo_tif.py $</MapunitRaster_10m $@
-	-gdal_translate -ot Float32 $@ temp.tif
-	-mv temp.tif $@
-	-rm temp.tif
+tifs/%.tif: gdbs/%.gdb
+	-extract_gssurgo_tif $</MapunitRaster_10m $@	
 
 gpkgs/%.gpkg: gdbs/%.gdb
 	-ogr2ogr -progress -f GPKG $@ $<
