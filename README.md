@@ -2,9 +2,7 @@
 
 [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 
-The `gSSURGO` data product contains multiple text format datasets referenced to a single raster grid. The raster grids are contained within file geodatabase archives and  can only be extracted using ArcGIS (using the fileGDB driver).
-
-Much of the operation of this repo is facilitated by the `gssurgo` python package.
+This repo is a demonstration workflow using the `gssurgo` python package. 
 
 ## Prereqs
 
@@ -12,14 +10,18 @@ Much of the operation of this repo is facilitated by the `gssurgo` python packag
 
 * Have the `arcpy` python module available for the intial `tif` extraction step
 
-* Have the `ogr2ogr` command available and working with the `GPKG` driver
-
-* Have the python modules listed in [environment.yml](environment.yml) installed. If using Anaconda, make sure you have the **64bit** version. You can install an Anaconda virtual environment with:
+* Install the dependencies for the `gssurgo` python package. If using Anaconda, make sure you have the **64bit** version. You can install an Anaconda virtual environment with:
 
 ```
-conda env create -n gSSURGO -f environment.yml
-source activate gSSURGO
+conda env create -n gssurgo -f environment.yml
+source activate gssurgo
 ```
+
+# development install 
+pip install git+git://github.com/jsta/gssurgo.git
+
+# development upgrade
+# pip install --upgrade git+git://github.com/jsta/gssurgo.git
 
 ## Usage
 
@@ -27,21 +29,25 @@ source activate gSSURGO
 
 `make all`
 
-### 2. Pull a specific variable and merge with corresponding tif
-
-Compose an SQL query that give a two column result of `mukey` and `some_variable`. For example, `'SELECT mukey, nonirryield_r FROM mucropyld WHERE (cropname = "Corn")'`. Pass this query to `query_gpkg.py` along with a bounding box given by `xmax`, `xmin`, `ymin`, `ymax`. For example, the following call produces a tif or non irrigated corn yields clipped to the defined bounding box:
+### 2. Extract Area of Interest (AOI) raster(s)
 
 ```
-python query_gpkg.py gSSURGO_MI.gpkg 'SELECT mukey, nonirryield_r FROM mucropyld WHERE (cropname = "Corn")' tifs/gSSURGO_MI.tif 935594 925029.1 2214590 2225584 tests/nonirryield_r.tif
+import gssurgo
+gssurgo.aoi(in_raster_path = "tifs", out_raster = "tests/aoi.tif", xmax = -88.34945, xmin = -88.35470, ymin = 38.70095, ymax = 38.70498)
+```
+
+### 2. Pull a specific variable and merge with corresponding tif
+
+Compose an SQL query that give a two column result of `mukey` and `some_variable`. For example, `"SELECT mukey, pwsl1pomu FROM Valu1"`. 
+
+```
+gssurgo.query_gpkg(src_tif = "tests/aoi.tif", gpkg_path = "gpkgs", sql_query = "SELECT mukey, pwsl1pomu FROM Valu1", out_raster = "tests/aoi_results.tif")    
 ```
 
 ### 3. Visualize output
 
-Pass the name of an output tif to `viz_numeric_output.py`:
-
 ```
-python viz_numeric_output.py tests/nonirryield_r.tif tests/nonirryield_r.png
+gssurgo.viz_numeric_output("tests/aoi_results.tif", "tests/aoi_results.png")
 ```
 
-![](tests/nonirryield_r.png)
-
+![](tests/aoi_results.png)
